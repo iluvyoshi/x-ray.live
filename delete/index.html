@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Delete your X-Ray account</title>
+<style>
+  :root { color-scheme: dark; --bg: #020407; --panel: #0B1119; --ink: #EEF3F7; --muted: #8796A6; --cyan: #36E2F2; --red: #FF5D5D; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 460px; margin: 0 auto; padding: 32px 16px 64px; display: flex; flex-direction: column; gap: 16px; }
+  h1 { font-size: 26px; margin: 0; letter-spacing: -.01em; }
+  p { margin: 0; color: var(--muted); }
+  .card { background: var(--panel); border: 1px solid rgba(120,185,250,.18); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+  label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: var(--muted); }
+  input { font: inherit; color: var(--ink); background: #070B11; border: 1.5px solid rgba(111,178,242,.45); border-radius: 12px; padding: 12px 14px; }
+  button { font: inherit; font-weight: 700; border: none; border-radius: 12px; padding: 13px; cursor: pointer; background: var(--cyan); color: #031018; }
+  button.danger { background: var(--red); color: #fff; }
+  button:disabled { opacity: .6; cursor: default; }
+  .err { color: #FF8A8A; } .ok { color: #2BD67B; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Delete your X-Ray account</h1>
+  <p>This permanently deletes your account and everything saved with it: your watch list, home lightbox, Compare picks and settings. Purchase records Google Play keeps are handled under Google's policies, and records we must keep for tax law are kept as the Privacy Policy describes.</p>
+  <p>Deleting your account doesn't cancel a Google Play subscription. Cancel it first in the Play Store: Profile, Payments and subscriptions, Subscriptions.</p>
+
+  <form class="card" id="s1">
+    <label>Email on your X-Ray account<input id="email" type="email" autocomplete="email" required placeholder="you@example.com"></label>
+    <button type="submit">Email me a code</button>
+    <p class="err" id="e1" role="alert"></p>
+  </form>
+
+  <form class="card" id="s2" hidden>
+    <label>6-digit code from the email<input id="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required></label>
+    <button type="submit" class="danger">Delete my account permanently</button>
+    <p class="err" id="e2" role="alert"></p>
+  </form>
+
+  <div class="card" id="done" hidden><p class="ok"><b>Your account was deleted.</b> You can close this page.</p></div>
+  <p>Can't sign in? Email the support address in our Privacy Policy and we'll handle it within 30 days.</p>
+</main>
+<script src="/config.js"></script>
+<script>
+  const C = window.XRAY_CONFIG || {}, U = (C.supabaseUrl || "").replace(/\/$/, ""), K = C.supabaseKey || "";
+  const post = async (path, body, token) => {
+    const r = await fetch(U + path, { method: "POST", headers: { apikey: K, "Content-Type": "application/json", ...(token ? { Authorization: "Bearer " + token } : {}) }, body: JSON.stringify(body || {}) });
+    const t = await r.text(); let d = null; try { d = t ? JSON.parse(t) : null; } catch {}
+    if (!r.ok) throw new Error((d && (d.msg || d.message || d.error_description)) || "Something went wrong (" + r.status + ").");
+    return d;
+  };
+  let email = "";
+  document.getElementById("s1").onsubmit = async e => {
+    e.preventDefault(); const b = e.target.querySelector("button"), err = document.getElementById("e1");
+    email = document.getElementById("email").value.trim(); err.textContent = ""; b.disabled = true;
+    try { await post("/auth/v1/otp", { email, create_user: false }); e.target.hidden = true; document.getElementById("s2").hidden = false; }
+    catch (x) { err.textContent = /not found|signups not allowed/i.test(x.message) ? "No X-Ray account uses that email." : x.message; }
+    b.disabled = false;
+  };
+  document.getElementById("s2").onsubmit = async e => {
+    e.preventDefault(); const b = e.target.querySelector("button"), err = document.getElementById("e2"); err.textContent = ""; b.disabled = true;
+    try {
+      const s = await post("/auth/v1/verify", { type: "email", email, token: document.getElementById("code").value.trim() });
+      await post("/rest/v1/rpc/delete_my_account", {}, s.access_token);
+      e.target.hidden = true; document.getElementById("done").hidden = false;
+    } catch (x) { err.textContent = /expired|invalid/i.test(x.message) ? "That code doesn't match or has expired." : x.message; }
+    b.disabled = false;
+  };
+</script>
+</body>
+</html>

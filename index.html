@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>X-Ray: see what the ticker hides</title><meta name="description" content="Balance sheets, debt, dilution and boards from SEC filings, laid over the stock price."><meta name="theme-color" content="#020407">
+<link rel="icon" type="image/png" href="/icon-192.png"><link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;600;800&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="/styles.css"></head>
+<body><div class="wrap">
+<header class="top"><a class="brand" href="/"><svg width="28" height="28" viewBox="0 0 26 26" aria-hidden="true"><rect x="1" y="1" width="24" height="24" rx="7" fill="none" stroke="#36E2F2" stroke-width="2"/><path d="M7 18L11.5 11L15 14.5L19 8" fill="none" stroke="#F4F7FA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 13H21" stroke="#36E2F2" stroke-width="1.4" stroke-dasharray="2 2" opacity=".85"/></svg>X-RAY</a><nav class="links"><a href="/#beta">Beta</a><a href="/terms/">Terms</a><a href="/privacy/">Privacy</a></nav></header>
+<section class="hero">
+  <div>
+    <span class="label">Beta · S&amp;P 500</span>
+    <h1>See what the <em>ticker</em> hides.</h1>
+    <p class="lead">X-Ray lays each company's balance sheet, debt, dilution and board over its stock price, read straight from SEC filings and rebuilt every night.</p>
+    <a href="#beta"><button class="cta" type="button">Join the beta</button></a>
+  </div>
+  <div class="film" aria-hidden="true"><div>
+    <div class="row"><span>ID 0001 · PRICE vs BOOKS</span><span>X-RAY</span></div>
+    <svg viewBox="0 0 320 170"><defs><linearGradient id="g" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#E4F6FF" stop-opacity=".25"/><stop offset="1" stop-color="#E4F6FF" stop-opacity="0"/></linearGradient></defs>
+      <path d="M0 150 L40 146 L80 140 L120 128 L160 120 L200 104 L240 92 L280 84 L320 76" fill="none" stroke="#36E2F2" stroke-width="2.5" style="filter:drop-shadow(0 0 6px rgba(54,226,242,.85))"/>
+      <path d="M0 140 C30 132 50 110 80 112 S120 70 150 74 S190 20 220 40 S260 60 280 30 S310 18 320 14 L320 170 L0 170Z" fill="url(#g)"/>
+      <path d="M0 140 C30 132 50 110 80 112 S120 70 150 74 S190 20 220 40 S260 60 280 30 S310 18 320 14" fill="none" stroke="#F4F7FA" stroke-width="2.5" style="filter:drop-shadow(0 0 5px rgba(200,235,255,.7))"/>
+    </svg>
+    <div class="legend"><span><i style="background:#F4F7FA"></i>Price</span><span><i style="background:#36E2F2"></i>On the books, per share</span></div>
+  </div></div>
+</section>
+<section class="how">
+  <div class="card"><span class="label">Bones</span><h3>Price vs. the books</h3><p>How far the share price sits above what the accounts say the company is worth, quarter by quarter.</p></div>
+  <div class="card"><span class="label">Health</span><h3>Debt, dilution, red flags</h3><p>Debt coming due, shares that could be added, Z-scores, cash vs. profit, auditor changes and late filings.</p></div>
+  <div class="card"><span class="label">Board</span><h3>Who's really in charge</h3><p>Directors with private equity ties, who controls the vote, insider buying and selling, and CEO pay vs. returns.</p></div>
+</section>
+<section class="beta" id="beta">
+  <div>
+    <span class="label">Android beta</span>
+    <h2>Test X-Ray before it launches</h2>
+    <p>We're inviting testers in waves. Leave your email and we'll send an invite with a Google Play link when your spot opens.</p>
+    <p style="font-size:14px">X-Ray describes what filings say. It isn't investment advice.</p>
+  </div>
+  <form class="join" id="join" novalidate>
+    <input type="email" id="email" autocomplete="email" placeholder="you@example.com" aria-label="Email" required>
+    <label class="check"><input type="checkbox" id="android" checked><span>I have an Android phone</span></label>
+    <label class="check"><input type="checkbox" id="adult"><span>I'm 18 or older and agree to the <a href="/privacy/">Privacy Policy</a></span></label>
+    <button class="cta" type="submit">Join the beta</button>
+    <p class="msg" id="msg" role="status"></p>
+  </form>
+</section>
+<script src="/config.js"></script>
+<script>
+  document.getElementById("join").onsubmit = async e => {
+    e.preventDefault();
+    const C = window.XRAY_CONFIG || {}, msg = document.getElementById("msg"), btn = e.target.querySelector("button");
+    const email = document.getElementById("email").value.trim().toLowerCase();
+    msg.className = "msg";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { msg.className = "msg err"; msg.textContent = "That email doesn't look right."; return; }
+    if (!document.getElementById("adult").checked) { msg.className = "msg err"; msg.textContent = "The beta is for adults 18 and older. Check the box to continue."; return; }
+    btn.disabled = true; msg.textContent = "Adding you…";
+    try {
+      const r = await fetch(`${C.supabaseUrl}/rest/v1/beta_signups`, { method: "POST",
+        headers: { apikey: C.supabaseKey, "Content-Type": "application/json", Prefer: "return=minimal" },
+        body: JSON.stringify({ email, android: document.getElementById("android").checked, source: "x-ray.live" }) });
+      if (r.ok || r.status === 409) { msg.className = "msg ok"; msg.textContent = "You're on the list. We'll email you when your invite is ready."; e.target.reset(); }
+      else throw new Error(r.status);
+    } catch (x) { msg.className = "msg err"; msg.textContent = "Something went wrong. Please try again in a minute."; }
+    btn.disabled = false;
+  };
+</script>
+
+<footer class="bottom"><span>© 2026 X-Ray. For education only; not investment advice.</span><nav><a href="/terms/">Terms</a><a href="/privacy/">Privacy</a><a href="/delete/">Delete account</a></nav></footer>
+</div></body></html>
