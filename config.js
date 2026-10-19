@@ -1,6 +1,7 @@
 /* Public settings shipped with the app. The publishable key is meant to be public (row-level security
    protects the data); never put the secret/service key here. */
 window.XRAY_CONFIG = {
+  freeBeta: true,                                 // beta: every tester gets Pro free and nothing is for sale. Set false at launch.
   supabaseUrl: "https://cpkdtgrgqrlgnooftcci.supabase.co",
   supabaseKey: "sb_publishable_yuiduOtKET87bxXX2DFtSw_I2CyUgwg",  // publishable key
   get dataUrl() { return this.supabaseUrl ? `${this.supabaseUrl}/storage/v1/object/public/app` : (this.localData || ""); },
