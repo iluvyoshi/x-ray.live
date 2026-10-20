@@ -131,7 +131,7 @@ function render() {
   if (S.view === "search") viewSearch(); else if (S.view === "company") viewCompany(); else if (S.view === "learn") viewLearn(); else viewCompare();
 }
 function go(view, extra = {}) { Object.assign(S, { view, ...extra }); render(); window.scrollTo?.(0, 0); }
-const footer = () => `<div class="foot"><span>For education only. Not investment advice.</span><span>Company data from SEC filings, rebuilt every night; end-of-day prices from Marketstack. ${LIVE.ok ? `Data as of ${fmtD(LIVE.built)}.` : "Showing the built-in sample: live data couldn't load."}</span><span>X-ray artwork is an original illustration made for X-Ray.</span></div>`;
+const footer = () => `<div class="foot"><button class="footfb" data-feedback="1">Beta · Send feedback</button><span>For education only. Not investment advice.</span><span>Company data from SEC filings, rebuilt every night; end-of-day prices from Marketstack. ${LIVE.ok ? `Data as of ${fmtD(LIVE.built)}.` : "Showing the built-in sample: live data couldn't load."}</span><span>X-ray artwork is an original illustration made for X-Ray.</span></div>`;
 
 /* ================= search (default screen) ================= */
 function skeleton() {
@@ -338,7 +338,7 @@ function drawChart(c) {
   const r = xraySVG(c, c.t === "SPCX" ? 5 : S.range, W, H, pad, false), el = $("#chart");
   const fmtT = v => Math.abs(v) >= 1000 ? "$" + (v / 1000).toFixed(v % 1000 ? 1 : 0) + "K" : "$" + (Math.abs(v) < 10 && v % 1 ? v.toFixed(1) : Math.round(v));
   el.innerHTML = r.svg + `<span class="ctag">${c.t} · PRICE / BOOKS</span><div class="yax">${r.ticks.filter(v => r.Y(v) > 14 && r.Y(v) < H - 8).map(v => `<span style="top:${(r.Y(v) / H * 100).toFixed(2)}%">${fmtT(v)}</span>`).join("")}</div><div class="scan" id="scan"></div><div class="tip" id="tip" hidden></div>`;
-  requestAnimationFrame(() => $("#scan")?.classList.add("go"));
+  requestAnimationFrame(() => { $("#scan")?.classList.add("go"); if (typeof SFX !== "undefined") SFX.play("zap"); });
   const svg = el.querySelector("svg"); let lastI = -1;
   const show = e => {
     const b = svg.getBoundingClientRect(), x = (e.clientX - b.left) / b.width * W;
@@ -1423,6 +1423,7 @@ function accountSheet() {
       <div class="wrow"><span>Watching</span><div class="obchips wchips">${WATCH.map(([k, l]) => `<button data-wlike="${k}" class="obchip${(a.likes || []).includes(k) ? " on" : ""}" aria-pressed="${(a.likes || []).includes(k)}">${l}</button>`).join("")}</div></div>
       <div><span>Experience</span><span>${esc(a.exp || "Not set")}</span></div>
       <div><span>Beginner mode</span><button class="tog${BEGIN.get() ? " on" : ""}" data-begin="1" role="switch" aria-checked="${BEGIN.get()}" aria-label="Beginner mode"><i></i></button></div>
+      <div><span>Sound effects</span><button class="tog${SFX.on() ? " on" : ""}" data-sfx="1" role="switch" aria-checked="${SFX.on()}" aria-label="Sound effects"><i></i></button></div>
       <div><span>Member since</span><span>${a.since}</span></div>
       <div><span>Version</span><span>${APP_VERSION} beta</span></div>
       <div><span>Plan</span>${FREE_BETA ? `<span style="color:#D8C9FF;font-weight:700">Pro · free during the beta</span>` : (() => { const p = PLAN.get(); return p.founder ? `<span style="color:#F5C76B;font-weight:700">Early Access Pass</span>` : p.tier === "pro" ? `<span style="color:#D8C9FF;font-weight:700">Pro · ${p.cycle === "year" ? "Yearly" : "Monthly"}</span>` : `<button class="gopro" data-pw="account">Free · Go Pro</button>`; })()}</div>

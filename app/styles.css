@@ -610,3 +610,4 @@ body.intro .app { padding-bottom: 32px; }
 .whead { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
 .whead h2 { margin: 4px 0 6px; font-size: 22px; line-height: 1.2; }
 .whead .iconbtn { flex: none; }
+.footfb { align-self: flex-start; border: 1px solid rgba(54,226,242,.45); background: rgba(54,226,242,.08); color: var(--books); font: inherit; font-size: 13px; font-weight: 700; padding: 8px 14px; border-radius: 99px; cursor: pointer; margin-bottom: 4px; }
