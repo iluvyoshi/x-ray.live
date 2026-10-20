@@ -233,7 +233,7 @@ function drawSugg() {
   const el = $("#sugg"), v = S.q.trim(), m = matches();
   if (!v) { el.innerHTML = ""; return; }
   el.innerHTML = m.length ? `<div class="sugg" role="listbox">${m.map((c, i) => `<button data-open="${c.t}" class="${i === S.hl ? "hl" : ""}" role="option" aria-selected="${i === S.hl}"><b>${c.t}</b><span>${esc(INFO[c.t][0])} · ${INFO[c.t][1]}</span></button>`).join("")}</div>`
-    : `<p class="note" style="text-align:center">"${esc(v)}" isn't in X-Ray yet. X-Ray covers the S&P 500 for now; more companies are coming.</p>`;
+    : `<p class="note" style="text-align:center">"${esc(v)}" isn't in X-Ray yet. X-Ray covers all S&P 500 companies in the beta and at launch. Every U.S.-listed company, about 6,000, is coming after launch.</p>`;
 }
 const logo = `<svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><rect x="1" y="1" width="24" height="24" rx="7" fill="none" stroke="#36E2F2" stroke-width="2"/><path d="M7 18L11.5 11L15 14.5L19 8" fill="none" stroke="#F4F7FA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 13H21" stroke="#36E2F2" stroke-width="1.5" stroke-dasharray="2 2"/></svg>`;
 const openCo = t => withCompany(t, () => go("company", { t, tab: "summary", qi: null, range: 5, mt: "ipo" }));  // withCompany: live.js

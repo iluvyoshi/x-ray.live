@@ -62,6 +62,7 @@ function welcomeSheet() {
       <li><b>New to the terms?</b> Turn on beginner mode in <b>Learn</b>, or press and hold any word to look it up.</li>
       <li><b>Compare</b> a few companies side by side.</li>
     </ol>
+    <p class="note" style="margin:0"><b>Which companies?</b> All S&P 500 companies, now and in the first live version. After launch we'll add every U.S.-listed company, about 6,000 in all.</p>
     <p class="note" style="margin:0">Something wrong, confusing or missing? Tell us from the account menu: <b>Send feedback</b>. That's what the beta is for.</p>
     <button class="obcta" data-welcomeclose="1">Start X-Raying</button>
     ${feedbackButton()}
