@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#020407">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="X-Ray">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>X-Ray</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app" id="app"></div>
+<div id="sheet"></div>
+<nav class="nav" aria-label="Main"><div>
+  <button data-nav="search" id="nav-search"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect x="2" y="2" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5 11H17" stroke="currentColor" stroke-width="1.6" stroke-dasharray="2 2"/></svg>X-Ray</button>
+  <button data-nav="compare" id="nav-compare"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect x="2" y="9" width="4" height="10" rx="1.5" fill="currentColor"/><rect x="9" y="4" width="4" height="15" rx="1.5" fill="currentColor"/><rect x="16" y="12" width="4" height="7" rx="1.5" fill="currentColor"/></svg>Compare</button>
+  <button data-nav="learn" id="nav-learn"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M3 4.5C5.5 3.5 8.5 3.5 11 5c2.5-1.5 5.5-1.5 8-.5V18c-2.5-1-5.5-1-8 .5-2.5-1.5-5.5-1.5-8-.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M11 5v13.5" stroke="currentColor" stroke-width="1.6"/></svg>Learn</button>
+</div></nav>
+<script src="config.js"></script>
+<script src="beta.js"></script>
+<script src="cpi.js"></script>
+<script src="app.js"></script>
+<script src="glossary.js"></script>
+<script src="auth.js"></script>
+<script src="live.js"></script>
+</body>
+</html>
