@@ -44,6 +44,7 @@ const XA = (() => {
 
   /* friendlier words for the errors people actually hit */
   const human = e => /rate limit|too many|security purposes/i.test(e.message) ? "Too many codes requested. Wait a minute, then try again."
+    : /invalid login credentials/i.test(e.message) ? "That code doesn't match. Check it and try again."
     : /expired|invalid/i.test(e.message) && /token|otp|code/i.test(e.message) ? "That code doesn't match or has expired. Check it or send a new one."
     : /signups not allowed|user not found/i.test(e.message) ? "No X-Ray account uses that email. Create one instead."
     : /Failed to fetch|NetworkError/i.test(e.message) ? "Can't reach X-Ray. Check your connection and try again." : e.message;
@@ -53,6 +54,11 @@ const XA = (() => {
     get user() { return session && session.user; },
     signedIn: () => !!session,
     async sendCode(email, create) { await call("/auth/v1/otp", { body: { email, create_user: !!create } }); },
+    /* Google Play's reviewers can't receive emailed codes: one review-only account signs in with a fixed 6-digit password instead */
+    isReview: email => !!cfg.reviewEmail && String(email || "").trim().toLowerCase() === cfg.reviewEmail,
+    async passwordSignIn(email, password) {
+      const d = await call("/auth/v1/token?grant_type=password", { body: { email, password } }); saveSession(keep(d)); return session.user;
+    },
     async verify(email, token) { const d = await call("/auth/v1/verify", { body: { type: "email", email, token } }); saveSession(keep(d)); return session.user; },
     async signOut() { try { await call("/auth/v1/logout", { auth: true }); } catch {} saveSession(null); },
     async profile() {
@@ -101,6 +107,7 @@ async function authSend() {
     ACCT.set({ ...a, name: OB.name || a.name || "Investor", email: OB.email, adultAt: OB.adultAt, termsAt: OB.adultAt, since: new Date().toISOString().slice(0, 10) });
     OB.err = ""; return obGo("profile");
   }
+  if (XA.isReview(OB.email)) { OB.err = ""; OB.code = ""; return obGo("code"); }
   OB.busy = true; OB.err = ""; render();
   try { await XA.sendCode(OB.email, OB.mode === "create"); OB.code = ""; OB.busy = false; obGo("code"); }
   catch (e) { OB.busy = false; OB.err = XA.human(e); render(); }
@@ -109,7 +116,7 @@ async function authVerify() {
   if (OB.code.length !== 6) { OB.err = "Enter all 6 digits."; return render(); }
   OB.busy = true; OB.err = ""; render();
   try {
-    await XA.verify(OB.email, OB.code);
+    if (XA.isReview(OB.email)) await XA.passwordSignIn(OB.email, OB.code); else await XA.verify(OB.email, OB.code);
     OB.busy = false; OB.code = "";
     const p = await XA.profile().catch(() => null);
     if (p) {  // an existing account: bring back its choices and go straight in

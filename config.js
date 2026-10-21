@@ -6,6 +6,7 @@ window.XRAY_CONFIG = {
   supabaseKey: "sb_publishable_yuiduOtKET87bxXX2DFtSw_I2CyUgwg",  // publishable key
   get dataUrl() { return this.supabaseUrl ? `${this.supabaseUrl}/storage/v1/object/public/app` : (this.localData || ""); },
   localData: "",                                  // local testing only: a folder with index.json and c/*.json
+  reviewEmail: "review@x-ray.live",               // Google Play reviewers only: signs in with a fixed 6-digit password set in Supabase
   termsUrl: "https://x-ray.live/terms/",          // public Terms of Service
   privacyUrl: "https://x-ray.live/privacy/",      // public Privacy Policy
   deleteUrl: "https://x-ray.live/delete/",        // public account-deletion page (Google Play requires one)

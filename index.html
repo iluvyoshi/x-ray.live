@@ -33,7 +33,7 @@
   <div>
     <span class="label">Android beta</span>
     <h2>Test X-Ray before it launches</h2>
-    <p>We're inviting testers in waves. Leave your email and we'll send an invite with a Google Play link when your spot opens.</p>
+    <p>Sign up and start testing right away. Android testers get the app from Google Play; on iPhone, X-Ray runs in Safari. Everything is free during the beta.</p>
     <p>The beta and the first live version cover all S&amp;P 500 companies. After launch, X-Ray will add every U.S.-listed company, about 6,000 in all.</p>
     <p style="font-size:14px">X-Ray describes what filings say. It isn't investment advice.</p>
   </div>
@@ -44,6 +44,7 @@
     <button class="cta" type="submit">Join the beta</button>
     <p class="msg" id="msg" role="status"></p>
   </form>
+  <div class="next" id="next" hidden></div>
 </section>
 <section class="beta" id="iphone">
   <div>
@@ -56,6 +57,8 @@
 </section>
 <script src="/config.js"></script>
 <script>
+  const GROUP = "https://groups.google.com/g/xray-beta-testers";
+  const OPTIN = "https://play.google.com/apps/testing/com.xrayfilings.app";
   document.getElementById("join").onsubmit = async e => {
     e.preventDefault();
     const C = window.XRAY_CONFIG || {}, msg = document.getElementById("msg"), btn = e.target.querySelector("button");
@@ -68,7 +71,21 @@
       const r = await fetch(`${C.supabaseUrl}/rest/v1/beta_signups`, { method: "POST",
         headers: { apikey: C.supabaseKey, "Content-Type": "application/json", Prefer: "return=minimal" },
         body: JSON.stringify({ email, android: document.getElementById("android").checked, source: "x-ray.live" }) });
-      if (r.ok || r.status === 409) { msg.className = "msg ok"; msg.textContent = "You're on the list. We'll email you when your invite is ready."; e.target.reset(); }
+      if (r.ok || r.status === 409) {
+        const android = document.getElementById("android").checked, next = document.getElementById("next");
+        msg.className = "msg ok"; msg.textContent = "You're in. Here's how to start:";
+        next.innerHTML = `<p class="msg ok" style="margin-bottom:14px">You're in. Here's how to start:</p>` + (android
+          ? `<ol>
+               <li><b>Join the tester group</b> with the Google account on your Android phone.<br><a class="btn" href="${GROUP}" target="_blank" rel="noopener">Join the group</a></li>
+               <li><b>Become a tester</b>, then install X-Ray from the Play Store. If it says the app isn't available yet, wait a few minutes after joining and try again.<br><a class="btn" href="${OPTIN}" target="_blank" rel="noopener">Get the Android beta</a></li>
+             </ol>
+             <p class="small">Use the same Google account for both steps. It's the one signed in to the Play Store on your phone.</p>`
+          : `<ol>
+               <li><b>Open X-Ray in Safari</b> (or any browser).<br><a class="btn" href="/app/">Open X-Ray</a></li>
+               <li>On iPhone, tap <b>Share</b> then <b>Add to Home Screen</b> to keep it next to your apps.</li>
+             </ol>`);
+        next.hidden = false; e.target.hidden = true;
+      }
       else throw new Error(r.status);
     } catch (x) { msg.className = "msg err"; msg.textContent = "Something went wrong. Please try again in a minute."; }
     btn.disabled = false;

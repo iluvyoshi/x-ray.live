@@ -7,7 +7,7 @@
    version and the platform. Emails and sign-in tokens are stripped before sending, at most 10 different
    errors per session, and none from the browser preview. Kept 90 days. */
 
-const APP_VERSION = "0.6.0";
+const APP_VERSION = "0.6.1";
 const PLATFORM = () => (window.Capacitor && window.Capacitor.getPlatform ? window.Capacitor.getPlatform() : "web");
 const DEVICE = () => (navigator.userAgent.match(/Android [\d.]+|iPhone OS [\d_]+|iPad; CPU OS [\d_]+|Mac OS X [\d_.]+|Windows NT [\d.]+/) || [""])[0].replace(/_/g, ".");
 const whereNow = () => {

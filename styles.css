@@ -45,3 +45,9 @@ footer.bottom nav { display: flex; gap: 18px; } footer.bottom a { color: var(--m
 mark.blank { background: rgba(255,181,71,.18); color: var(--warn); border-radius: 4px; padding: 0 4px; }
 .draft { border: 1px dashed rgba(255,181,71,.6); background: rgba(255,181,71,.07); color: var(--warn); border-radius: 12px; padding: 10px 14px; font-size: 14px; margin-top: 8px; }
 @media (max-width: 760px) { .hero, .beta { grid-template-columns: 1fr; } section.how { grid-template-columns: 1fr; } nav.links { display: none; } .beta { padding: 20px; } }
+
+.next ol { margin: 0; padding-left: 1.3em; display: grid; gap: 16px; }
+.next li { line-height: 1.45; }
+.next .btn { display: inline-block; margin-top: 8px; padding: 10px 16px; border-radius: 10px; background: #3FE0F0; color: #05080C; font-weight: 800; text-decoration: none; }
+.next .small { font-size: 13px; opacity: .75; margin: 14px 0 0; }
+[hidden] { display: none !important; }
