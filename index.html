@@ -40,6 +40,7 @@
   <form class="join" id="join" novalidate>
     <input type="email" id="email" autocomplete="email" placeholder="you@example.com" aria-label="Email" required>
     <label class="check"><input type="checkbox" id="android" checked><span>I have an Android phone</span></label>
+    <p class="hint" id="gnote">Android: use the <b>Google account</b> signed in to the Play Store on your phone (usually your Gmail). Google Play only lets Google accounts join the beta.</p>
     <label class="check"><input type="checkbox" id="adult"><span>I'm 18 or older and agree to the <a href="/privacy/">Privacy Policy</a></span></label>
     <button class="cta" type="submit">Join the beta</button>
     <p class="msg" id="msg" role="status"></p>
@@ -59,6 +60,8 @@
 <script>
   const GROUP = "https://groups.google.com/g/xray-beta-testers";
   const OPTIN = "https://play.google.com/apps/testing/com.xrayfilings.app";
+  const andBox = document.getElementById("android"), gnote = document.getElementById("gnote");
+  andBox.onchange = () => { gnote.hidden = !andBox.checked; };
   document.getElementById("join").onsubmit = async e => {
     e.preventDefault();
     const C = window.XRAY_CONFIG || {}, msg = document.getElementById("msg"), btn = e.target.querySelector("button");
@@ -66,6 +69,11 @@
     msg.className = "msg";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { msg.className = "msg err"; msg.textContent = "That email doesn't look right."; return; }
     if (!document.getElementById("adult").checked) { msg.className = "msg err"; msg.textContent = "The beta is for adults 18 and older. Check the box to continue."; return; }
+    if (andBox.checked && !/@(gmail|googlemail)\.com$/.test(email) && !e.target.dataset.ok) {
+      e.target.dataset.ok = 1; msg.className = "msg err";
+      msg.textContent = "Is this the Google account on your Play Store? Google Play needs a Google account to join. Change it, or tap Join again if it is.";
+      return;
+    }
     btn.disabled = true; msg.textContent = "Adding you…";
     try {
       const r = await fetch(`${C.supabaseUrl}/rest/v1/beta_signups`, { method: "POST",
